@@ -1,0 +1,192 @@
+C:\USERS\LEE\DESKTOP\LEJIANWEN源码\RUSTDESK-SERVER-0.1.2
+|   .env
+|   .gitattributes
+|   .gitignore
+|   .gitmodules
+|   build.rs
+|   Cargo.lock
+|   Cargo.toml
+|   db_v2.sqlite3
+|   docker-compose.yml
+|   LICENSE
+|   README-DE.md
+|   README-EN.md
+|   README-NL.md
+|   README-TW.md
+|   README.md
+|   tree.txt
+|
++---.cargo
+|       config.toml
+|
++---.github
+|   |   dependabot.yml
+|   |
+|   +---ISSUE_TEMPLATE
+|   |       bug_report.md
+|   |       config.yml
+|   |       feature_request.md
+|   |
+|   \---workflows
+|           build-test.yaml
+|           build.yaml
+|           ghcr.yml
+|           test.yml
+|
++---.vscode
+|       settings.json
+|
++---debian
+|   |   changelog
+|   |   compat
+|   |   control.tpl
+|   |   copyright
+|   |   rules
+|   |   rustdesk-server-hbbr.install
+|   |   rustdesk-server-hbbr.postinst
+|   |   rustdesk-server-hbbr.postrm
+|   |   rustdesk-server-hbbr.prerm
+|   |   rustdesk-server-hbbs.install
+|   |   rustdesk-server-hbbs.postinst
+|   |   rustdesk-server-hbbs.postrm
+|   |   rustdesk-server-hbbs.prerm
+|   |   rustdesk-server-utils.install
+|   |
+|   \---source
+|           format
+|
++---docker
+|   |   Dockerfile
+|   |   healthcheck.sh
+|   |
+|   \---rootfs
+|       +---etc
+|       |   \---s6-overlay
+|       |       \---s6-rc.d
+|       |           +---api
+|       |           |       dependencies
+|       |           |       run
+|       |           |       type
+|       |           |
+|       |           +---hbbr
+|       |           |       dependencies
+|       |           |       run
+|       |           |       type
+|       |           |
+|       |           +---hbbs
+|       |           |       dependencies
+|       |           |       run
+|       |           |       type
+|       |           |
+|       |           +---key-secret
+|       |           |       type
+|       |           |       up
+|       |           |       up.real
+|       |           |
+|       |           \---user
+|       |               \---contents.d
+|       |                       api
+|       |                       hbbr
+|       |                       hbbs
+|       |                       key-secret
+|       |
+|       \---usr
+|           \---bin
+|                   healthcheck.sh
+|
++---docker-classic
+|       Dockerfile
+|
++---libs
+|   \---hbb_common
++---rcd
+|       rustdesk-hbbr
+|       rustdesk-hbbs
+|
++---readme
+|       api.png
+|       command_simple.png
+|
++---src
+|       common.rs
+|       database.rs
+|       hbbr.rs
+|       jwt.rs
+|       lib.rs
+|       main.rs
+|       mod.rs
+|       peer.rs
+|       relay_server.rs
+|       rendezvous_server.rs
+|       utils.rs
+|
++---systemd
+|       rustdesk-hbbr.service
+|       rustdesk-hbbs.service
+|
++---tests
+|       jwt_tests.rs
+|
+\---ui
+    |   .gitignore
+    |   build.rs
+    |   Cargo.lock
+    |   Cargo.toml
+    |   setup.nsi
+    |   tauri.conf.json
+    |
+    +---.cargo
+    |       config.toml
+    |
+    +---html
+    |       .gitignore
+    |       index.html
+    |       main.js
+    |       package.json
+    |       style.css
+    |       vite.config.js
+    |
+    +---icons
+    |       128x128.png
+    |       128x128@2x.png
+    |       32x32.png
+    |       icon.icns
+    |       icon.ico
+    |       icon.png
+    |       Square107x107Logo.png
+    |       Square142x142Logo.png
+    |       Square150x150Logo.png
+    |       Square284x284Logo.png
+    |       Square30x30Logo.png
+    |       Square310x310Logo.png
+    |       Square44x44Logo.png
+    |       Square71x71Logo.png
+    |       Square89x89Logo.png
+    |       StoreLogo.png
+    |
+    +---setup
+    |   \---service
+    |           nssm.exe
+    |           run.cmd
+    |
+    \---src
+        |   lib.rs
+        |   main.rs
+        |
+        +---adapter
+        |   |   mod.rs
+        |   |
+        |   +---service
+        |   |       mod.rs
+        |   |       windows.rs
+        |   |
+        |   \---view
+        |           desktop.rs
+        |           mod.rs
+        |
+        \---usecase
+                mod.rs
+                presenter.rs
+                service.rs
+                view.rs
+                watcher.rs
