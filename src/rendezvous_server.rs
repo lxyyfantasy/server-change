@@ -141,8 +141,8 @@ impl RendezvousServer {
     #[tokio::main(flavor = "multi_thread")]
     pub async fn start(port: i32, serial: i32, key: &str, rmem: usize) -> ResultType<()> {
         let (key, sk) = Self::get_server_sk(key);
-        let nat_port = port - 1;
-        let ws_port = port + 2;
+        let nat_port = 21115;
+        let ws_port = 21118;
         let pm = PeerMap::new().await?;
         log::info!("serial={}", serial);
         let rendezvous_servers = get_servers(&get_arg("rendezvous-servers"), "rendezvous-servers");
@@ -214,13 +214,7 @@ impl RendezvousServer {
 
         let must_login = get_arg("must-login");
         log::debug!("must_login={}", must_login);
-        if must_login.to_uppercase() == "Y"
-            || (must_login == ""
-                && std::env::var("MUST_LOGIN")
-                    .unwrap_or_default()
-                    .to_uppercase()
-                    == "Y")
-        {
+        if must_login.is_empty() || must_login.to_uppercase() == "Y" {
             MUST_LOGIN.store(true, Ordering::SeqCst);
         }
 

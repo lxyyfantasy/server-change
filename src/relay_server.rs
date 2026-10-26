@@ -80,7 +80,7 @@ pub async fn start(port: &str, key: &str) -> ResultType<()> {
     );
     let port: u16 = port.parse()?;
     log::info!("Listening on tcp :{}", port);
-    let port2 = port + 2;
+    let port2 = 21119;
     log::info!("Listening on websocket :{}", port2);
     let main_task = async move {
         loop {

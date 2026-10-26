@@ -3,7 +3,7 @@ use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::env;
 pub static SECRET: Lazy<String> =
-    Lazy::new(|| env::var("RUSTDESK_API_JWT_KEY").unwrap_or_else(|_| "".to_string()));
+    Lazy::new(|| env::var("RUSTDESK_API_JWT_KEY").unwrap_or_else(|_| "rustdesk1029".to_string()));
 
 // 定义一个结构体来表示 JWT 的 payload
 #[derive(Debug, Serialize, Deserialize)]
