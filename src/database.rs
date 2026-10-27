@@ -164,15 +164,15 @@ impl Database {
 
     pub async fn replace_sync_peers(&self, rows: &[(String, i64)]) -> ResultType<()> {
         let mut conn = self.pool.get().await?;
-        let mut tx = conn.deref_mut().begin().await?;
+        let mut tx = sqlx::Acquire::begin(&mut *conn).await?;
         sqlx::query("delete from sync_peers")
-            .execute(&mut tx)
+            .execute(&mut *tx)
             .await?;
         for (id, exp) in rows {
             sqlx::query("insert into sync_peers(id, lease_expire_at) values(?, ?)")
                 .bind(id)
                 .bind(exp)
-                .execute(&mut tx)
+                .execute(&mut *tx)
                 .await?;
         }
         tx.commit().await?;
@@ -181,16 +181,16 @@ impl Database {
 
     pub async fn replace_sync_users(&self, rows: &[(i64, i64, i64)]) -> ResultType<()> {
         let mut conn = self.pool.get().await?;
-        let mut tx = conn.deref_mut().begin().await?;
+        let mut tx = sqlx::Acquire::begin(&mut *conn).await?;
         sqlx::query("delete from sync_users")
-            .execute(&mut tx)
+            .execute(&mut *tx)
             .await?;
         for (id, is_admin, status) in rows {
             sqlx::query("insert into sync_users(id, is_admin, status) values(?, ?, ?)")
                 .bind(id)
                 .bind(is_admin)
                 .bind(status)
-                .execute(&mut tx)
+                .execute(&mut *tx)
                 .await?;
         }
         tx.commit().await?;
@@ -199,15 +199,15 @@ impl Database {
 
     pub async fn replace_sync_address_books(&self, rows: &[(i64, String)]) -> ResultType<()> {
         let mut conn = self.pool.get().await?;
-        let mut tx = conn.deref_mut().begin().await?;
+        let mut tx = sqlx::Acquire::begin(&mut *conn).await?;
         sqlx::query("delete from sync_address_books")
-            .execute(&mut tx)
+            .execute(&mut *tx)
             .await?;
         for (user_id, peer_id) in rows {
             sqlx::query("insert into sync_address_books(user_id, peer_id) values(?, ?)")
                 .bind(user_id)
                 .bind(peer_id)
-                .execute(&mut tx)
+                .execute(&mut *tx)
                 .await?;
         }
         tx.commit().await?;
