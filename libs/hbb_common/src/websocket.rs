@@ -359,10 +359,10 @@ pub fn check_ws(endpoint: &str) -> String {
     let (relay, dst_port) = if endpoint_port == rendezvous_port {
         // rendezvous
         (false, 21118)
-    } else if endpoint_port == rendezvous_port - 1 {
+    } else if endpoint_port == 21115 {
         // online
         (false, 21118)
-    } else if endpoint_port == relay_port || endpoint_port == rendezvous_port + 1 {
+    } else if endpoint_port == relay_port || endpoint_port == 21117 {
         // relay
         (true, 21119)
     } else {
