@@ -1,7 +1,7 @@
 [target.x86_64-unknown-linux-musl]
 image = "alpine:3.16"
 pre-build = [
-    "apk add --no-cache openssl-dev musl-dev pkgconfig perl make rustup gcompat",
+    "apk add --no-cache openssl-dev musl-dev pkgconfig perl make rustup gcompat gcc",
     "rustup-init -y --default-toolchain stable --profile minimal",
     "P=/root/.rustup/toolchains/stable-x86_64-unknown-linux-musl/bin; while [ \"$P\" != \"/\" ]; do chmod -v 755 $P; P=$(dirname $P); done",
 ]
