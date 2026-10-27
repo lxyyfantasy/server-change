@@ -9,9 +9,6 @@ name: build-test
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - 'test.*'
 
 env:
   CARGO_TERM_COLOR: always
