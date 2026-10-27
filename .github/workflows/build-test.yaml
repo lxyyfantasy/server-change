@@ -82,7 +82,7 @@ jobs:
       fail-fast: false
       matrix:
         job:
-          #- { name: "amd64",   docker_platform: "linux/amd64",  s6_platform: "x86_64" }
+          - { name: "amd64",   docker_platform: "linux/amd64",  s6_platform: "x86_64" }
           #- { name: "arm64v8", docker_platform: "linux/arm64",  s6_platform: "aarch64" }
           #- { name: "armv7",   docker_platform: "linux/arm/v7", s6_platform: "armhf" }
           #- { name: "i386",    docker_platform: "linux/386",    s6_platform: "i686" }
