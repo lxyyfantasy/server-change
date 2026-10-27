@@ -55,7 +55,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --release --all-features --features openssl/vendored --target=${{ matrix.job.target }}
+          args: --release --all-features --features vendored-openssl --target=${{ matrix.job.target }}
           use-cross: true  
 
       - name: Exec chmod
