@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use hbb_common::{log, ResultType};
 use sqlx::{
-    sqlite::SqliteConnectOptions, Acquire, ConnectOptions, Connection, Error as SqlxError,
+    sqlite::SqliteConnectOptions, ConnectOptions, Connection, Error as SqlxError, FromRow,
     SqliteConnection,
 };
 use std::{ops::DerefMut, str::FromStr};
@@ -34,7 +34,7 @@ pub struct Database {
     pool: Pool,
 }
 
-#[derive(Default)]
+#[derive(Default, FromRow)]
 pub struct Peer {
     pub guid: Vec<u8>,
     pub id: String,
@@ -130,7 +130,7 @@ impl Database {
     ) -> ResultType<Vec<u8>> {
         let guid = uuid::Uuid::new_v4().as_bytes().to_vec();
         sqlx::query("insert into peer(guid, id, uuid, pk, info) values(?, ?, ?, ?, ?)")
-            .bind(guid)
+            .bind(&guid)
             .bind(id)
             .bind(uuid)
             .bind(pk)

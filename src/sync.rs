@@ -1,12 +1,14 @@
 use crate::database::Database;
 use hbb_common::{log, ResultType};
-use sqlx::{sqlite::SqliteConnectOptions, Connection, Row};
+use sqlx::{
+    sqlite::SqliteConnectOptions, ConnectOptions, Connection, Error as SqlxError, FromRow,
+    SqliteConnection,
+};
 use std::str::FromStr;
 use std::time::Duration;
-use tokio;
 
 pub async fn run_sync_loop(db: Database, api_db_path: String) {
-    let mut interval = tokio::time::interval(Duration::from_secs(60));
+    let mut interval = hbb_common::tokio::time::interval(Duration::from_secs(60));
     loop {
         interval.tick().await;
         if let Err(err) = sync_once(&db, &api_db_path).await {
