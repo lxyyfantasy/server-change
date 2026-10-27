@@ -15,7 +15,7 @@ services:
     environment:
       - RELAY=<relay_server[:port]>
       - ENCRYPTED_ONLY=1
-      - MUST_LOGIN=N
+      - MUST_LOGIN=Y
       - TZ=Asia/Shanghai
       - RUSTDESK_API_RUSTDESK_ID_SERVER=<id_server[:21116]>
       - RUSTDESK_API_RUSTDESK_RELAY_SERVER=<relay_server[:21117]>
