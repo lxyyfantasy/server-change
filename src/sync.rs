@@ -63,6 +63,10 @@ async fn sync_once(db: &Database, api_db_path: &str) -> ResultType<()> {
     db.replace_sync_peers(&peers).await?;
     db.replace_sync_users(&users).await?;
     db.replace_sync_address_books(&abs).await?;
+    let cleaned = db.clean_peers_not_in_sync().await?;
+    if cleaned > 0 {
+        log::warn!("cleaned {} ghost peers not in api list", cleaned);
+    }
     log::info!(
         "sync ok: peers={} users={} ab={}",
         peers.len(),

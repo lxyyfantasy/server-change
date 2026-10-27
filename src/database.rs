@@ -214,6 +214,15 @@ impl Database {
         Ok(())
     }
 
+    pub async fn clean_peers_not_in_sync(&self) -> ResultType<u64> {
+        let res = sqlx::query(
+            "delete from peer where id not in (select id from sync_peers)"
+        )
+        .execute(self.pool.get().await?.deref_mut())
+        .await?;
+        Ok(res.rows_affected())
+    }
+
     pub async fn sync_user_is_admin(&self, user_id: u32) -> ResultType<Option<(i64, i64)>> {
         Ok(sqlx::query_as::<_, (i64, i64)>(
             "select is_admin, status from sync_users where id = ?",
