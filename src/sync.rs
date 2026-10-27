@@ -1,9 +1,6 @@
 use crate::database::Database;
 use hbb_common::{log, ResultType};
-use sqlx::{
-    sqlite::SqliteConnectOptions, ConnectOptions, Connection, Error as SqlxError, FromRow,
-    SqliteConnection,
-};
+use sqlx::{sqlite::SqliteConnectOptions, Connection, Row};
 use std::str::FromStr;
 use std::time::Duration;
 
