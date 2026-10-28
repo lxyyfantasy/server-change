@@ -1,6 +1,7 @@
 use crate::database::Database;
 use hbb_common::{log, ResultType};
-use sqlx::{sqlite::SqliteConnectOptions, Connection, Row};
+use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqliteSynchronous};
+use sqlx::{Connection, Row};
 use std::str::FromStr;
 use std::time::Duration;
 
@@ -22,6 +23,8 @@ async fn sync_once(db: &Database, api_db_path: &str) -> ResultType<()> {
     let url = format!("sqlite://{}", api_db_path);
     let opt = SqliteConnectOptions::from_str(&url)?
         .read_only(true)
+        .journal_mode(SqliteJournalMode::Delete)
+        .synchronous(SqliteSynchronous::Normal)
         .busy_timeout(Duration::from_secs(5));
     let mut conn = sqlx::SqliteConnection::connect_with(&opt).await?;
 
@@ -60,13 +63,13 @@ async fn sync_once(db: &Database, api_db_path: &str) -> ResultType<()> {
         .map(|r| (r.get::<i64, _>("user_id"), r.get::<String, _>("id")))
         .collect();
 
-    db.replace_sync_peers(&peers).await?;
-    db.replace_sync_users(&users).await?;
-    db.replace_sync_address_books(&abs).await?;
+    db.replace_all_sync(&peers, &users, &abs).await?;
+
     let cleaned = db.clean_peers_not_in_sync().await?;
     if cleaned > 0 {
         log::warn!("cleaned {} ghost peers not in api list", cleaned);
     }
+
     log::info!(
         "sync ok: peers={} users={} ab={}",
         peers.len(),

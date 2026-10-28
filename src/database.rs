@@ -209,6 +209,49 @@ impl Database {
         Ok(())
     }
 
+    pub async fn replace_all_sync(
+        &self,
+        peers: &[(String, i64)],
+        users: &[(i64, i64, i64)],
+        abs: &[(i64, String)],
+    ) -> ResultType<()> {
+        let mut conn = self.pool.get().await?;
+        let mut tx = sqlx::Acquire::begin(&mut *conn).await?;
+        sqlx::query("delete from sync_peers")
+            .execute(&mut *tx)
+            .await?;
+        for (id, exp) in peers {
+            sqlx::query("insert into sync_peers(id, lease_expire_at) values(?, ?)")
+                .bind(id)
+                .bind(exp)
+                .execute(&mut *tx)
+                .await?;
+        }
+        sqlx::query("delete from sync_users")
+            .execute(&mut *tx)
+            .await?;
+        for (id, is_admin, status) in users {
+            sqlx::query("insert into sync_users(id, is_admin, status) values(?, ?, ?)")
+                .bind(id)
+                .bind(is_admin)
+                .bind(status)
+                .execute(&mut *tx)
+                .await?;
+        }
+        sqlx::query("delete from sync_address_books")
+            .execute(&mut *tx)
+            .await?;
+        for (user_id, peer_id) in abs {
+            sqlx::query("insert into sync_address_books(user_id, peer_id) values(?, ?)")
+                .bind(user_id)
+                .bind(peer_id)
+                .execute(&mut *tx)
+                .await?;
+        }
+        tx.commit().await?;
+        Ok(())
+    }
+
     pub async fn clean_peers_not_in_sync(&self) -> ResultType<u64> {
         let res = sqlx::query(
             "delete from peer where id not in (select id from sync_peers)"
