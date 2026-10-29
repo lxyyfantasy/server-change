@@ -920,6 +920,7 @@ impl RendezvousServer {
         }
         // if secret is not empty check token by jwt
         let mut login_user_id: Option<u32> = None;
+        let mut login_is_admin = false;
         if MUST_LOGIN.load(Ordering::SeqCst) {
             if ph.token.is_empty() {
                 let mut msg_out = RendezvousMessage::new();
@@ -930,7 +931,10 @@ impl RendezvousServer {
                 return Ok((msg_out, None));
             } else if !jwt::SECRET.is_empty() {
                 match jwt::verify_token(ph.token.as_str()) {
-                    Ok(claims) => login_user_id = Some(claims.user_id),
+                    Ok(claims) => {
+                        login_user_id = Some(claims.user_id);
+                        login_is_admin = claims.is_admin;
+                    }
                     Err(_) => {
                         let mut msg_out = RendezvousMessage::new();
                         msg_out.set_punch_hole_response(PunchHoleResponse {
@@ -946,7 +950,7 @@ impl RendezvousServer {
         }
         let id = ph.id;
         if PEER_AUTH_CHECK.load(Ordering::SeqCst) {
-            let uid = match login_user_id {
+            let _uid = match login_user_id {
                 Some(u) => u,
                 None => {
                     let mut msg_out = RendezvousMessage::new();
@@ -957,28 +961,22 @@ impl RendezvousServer {
                     return Ok((msg_out, None));
                 }
             };
-            let db = self.pm.db.clone();
-            let allowed = match db.sync_user_is_admin(uid).await {
-                Ok(Some((is_admin, status))) => {
-                    if status == 1 && is_admin == 1 {
-                        true
-                    } else if status != 1 {
-                        false
-                    } else {
-                        let in_book = db.sync_user_has_peer(uid, &id).await.unwrap_or(false);
-                        if !in_book {
-                            false
-                        } else {
-                            match db.sync_peer_lease_expire_at(&id).await {
-                                Ok(Some(exp)) => exp > now() as i64,
-                                _ => false,
-                            }
-                        }
-                    }
+            let allowed = if login_is_admin {
+                true
+            } else {
+                let db = self.pm.db.clone();
+                match db.sync_peer_lease_expire_at(&id).await {
+                    Ok(Some(exp)) => exp > now() as i64,
+                    _ => false,
                 }
-                _ => false,
             };
             if !allowed {
+                log::warn!(
+                    "PEER_AUTH_CHECK denied: uid={:?} admin={} peer={}",
+                    login_user_id,
+                    login_is_admin,
+                    id
+                );
                 let mut msg_out = RendezvousMessage::new();
                 msg_out.set_punch_hole_response(PunchHoleResponse {
                     other_failure: String::from("Permission denied"),

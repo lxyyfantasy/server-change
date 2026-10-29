@@ -9,6 +9,8 @@ pub static SECRET: Lazy<String> =
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
     pub user_id: u32,
+    #[serde(default)]
+    pub is_admin: bool,
     exp: usize,
 }
 
@@ -16,6 +18,7 @@ pub fn generate_token(user_id: u32, exp: i64) -> Result<String, String> {
     println!("secret: {:}", SECRET.to_string());
     let claims = Claims {
         user_id,
+        is_admin: false,
         exp: (chrono::Utc::now() + chrono::Duration::seconds(exp)).timestamp() as usize,
     };
 

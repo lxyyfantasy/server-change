@@ -41,40 +41,8 @@ async fn sync_once(db: &Database, api_db_path: &str) -> ResultType<()> {
         })
         .collect();
 
-    let user_rows = sqlx::query("select id, is_admin, status from users")
-        .fetch_all(&mut conn)
-        .await?;
-    let users: Vec<(i64, i64, i64)> = user_rows
-        .iter()
-        .map(|r| {
-            (
-                r.get::<i64, _>("id"),
-                r.get::<i64, _>("is_admin"),
-                r.get::<i64, _>("status"),
-            )
-        })
-        .collect();
+    db.replace_sync_peers(&peers).await?;
 
-    let ab_rows = sqlx::query("select user_id, id from address_books")
-        .fetch_all(&mut conn)
-        .await?;
-    let abs: Vec<(i64, String)> = ab_rows
-        .iter()
-        .map(|r| (r.get::<i64, _>("user_id"), r.get::<String, _>("id")))
-        .collect();
-
-    db.replace_all_sync(&peers, &users, &abs).await?;
-
-    let cleaned = db.clean_peers_not_in_sync().await?;
-    if cleaned > 0 {
-        log::warn!("cleaned {} ghost peers not in api list", cleaned);
-    }
-
-    log::info!(
-        "sync ok: peers={} users={} ab={}",
-        peers.len(),
-        users.len(),
-        abs.len()
-    );
+    log::info!("sync ok: peers={}", peers.len());
     Ok(())
 }
